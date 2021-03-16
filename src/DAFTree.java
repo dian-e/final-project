@@ -207,6 +207,65 @@ public class DAFTree<K extends Comparable<? super K>, D> implements Iterable {
         if (child != null) { child.parent = node.parent; }
     }
 
+    /* ASSUMES NODE IS IN TREE */
+    public DAFNode<K, D> removeAll(K key) {
+        DAFNode<K, D> node = lookup(key);
+
+        // node is leaf
+        if (node.left == null && node.right == null) {
+            if (node.parent == null) { this.root = null; } // if node is root
+            attachParent(node, null);
+        }
+        // node has only left child
+        else if (node.right == null) {
+            if (node.parent == null) { // if node is root
+                this.root = node.left;
+                node.left.parent = null;
+            }
+            attachParent(node, node.left);
+        }
+        // node has only right child
+        else if (node.left == null) { // if node is root
+            if (node.parent == null) {
+                this.root = node.right;
+                node.right.parent = null;
+            }
+            attachParent(node, node.right);
+        }
+        // node has 2 children
+        else {
+            DAFNode<K, D> curr = node.right;
+
+            // first right child doesn't have a left child
+            if (curr.left == null) {
+                if (node.parent == null) {  // root removal
+                    this.root = curr;
+                    curr.parent = null;
+                }
+                else { attachParent(node, curr); }
+                curr.left = node.left;
+                curr.left.parent = curr;
+            } else {
+                while (curr.left != null) { curr = curr.left; }
+
+                // if curr has a right child
+                if (curr.right != null) { attachParent(curr, curr.right); }
+                else { curr.parent.left = null; }
+
+                curr.left = node.left;
+                curr.right = node.right;
+                curr.left.parent = curr;
+                curr.right.parent = curr;
+                curr.parent = node.parent;
+                if (node.parent == null) { this.root = curr; } // root removal
+            }
+        }
+        this.nUnique -= 1;
+        this.nElems -= node.count;
+        node.count = 0;
+        return node;
+    }
+
     public DAFNode<K, D> getRoot() { return this.root; }
 
     public DAFNode<K, D> findExtreme(boolean isMax) {
@@ -258,5 +317,38 @@ public class DAFTree<K extends Comparable<? super K>, D> implements Iterable {
     }
 
     public Iterator<K> iterator() { return new DAFTreeIterator(); }
+
+    public Iterator<K> uniqueIterator() { return new DAFTreeUniqueIterator(); }
+
+    public class DAFTreeUniqueIterator implements Iterator<K> {
+
+        Stack<DAFNode<K, D>> stack;
+
+        public DAFTreeUniqueIterator() {
+            this.stack = new Stack();
+            addLeftPath(getRoot());
+        }
+
+        public boolean hasNext() { return !this.stack.isEmpty(); }
+
+        public K next() {
+            DAFNode<K, D> popped;
+            if (!hasNext()) { throw new NoSuchElementException(); }
+            else {
+                popped = this.stack.pop();
+                // adds left path of right child if applicable
+                addLeftPath(popped.right);
+            }
+            return popped.key;
+        }
+
+        private void addLeftPath(DAFNode<K, D> curr) {
+            // robust even if the given root is null
+            while (curr != null) {
+                this.stack.push(curr);
+                curr = curr.left;
+            }
+        }
+    }
 
 }

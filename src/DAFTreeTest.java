@@ -140,11 +140,11 @@ public class DAFTreeTest {
     @Test
     public void testIterator() {
         String[] inOrder = new String[]{"SS", "SS", "ST", "ST", "ST", "ST", "ST", "STRING", "STRING", "Str", "String"};
-//        for (String item : inOrder) {
-//            assertTrue(iter2.hasNext());
-//            assertEquals(item, iter2.next());
-//        }
-        while (iter2.hasNext()) { System.out.println(iter2.next()); }
+        for (String item : inOrder) {
+            assertTrue(iter2.hasNext());
+            assertEquals(item, iter2.next());
+        }
+//        while (iter2.hasNext()) { System.out.println(iter2.next()); }
         assertFalse(iter2.hasNext());
     }
 
