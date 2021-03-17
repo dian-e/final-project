@@ -145,10 +145,7 @@ public class HashTable<K, D> {
      * @return true if the pair is inserted and false if the key is already present
      * @throws NullPointerException if key or data is null
      */
-    private int hashValue(K key) {
-        TableEntry<K, D> dummy = new TableEntry<>(key, null);
-        return Math.abs(dummy.hashCode() % this.capacity());
-    }
+    private int hashValue(K key) { return Math.abs(key.hashCode() % this.capacity()); }
 
     @SuppressWarnings("unchecked")
     /**

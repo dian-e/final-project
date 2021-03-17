@@ -104,4 +104,5 @@ public class HashTableTest {
         assertEquals(null, table2.lookup("FF"));
         assertFalse(table2.delete("FF"));
     }
+
 }

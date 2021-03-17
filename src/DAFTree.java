@@ -200,11 +200,17 @@ public class DAFTree<K extends Comparable<? super K>, D> implements Iterable {
     }
 
     private void attachParent(DAFNode<K, D> node, DAFNode<K, D> child) {
-        DAFNode<K, D> parLChild = node.parent.left;
-        if (parLChild != null && parLChild.equals(node)) { node.parent.left = child; }
-        else { node.parent.right = child; }
+        if (node.parent == null && child == null) { this.root = null; }
+        else if (node.parent == null) {
+            this.root = child;
+            child.parent = null;
+        } else {
+            DAFNode<K, D> parLChild = node.parent.left;
+            if (parLChild != null && parLChild.equals(node)) { node.parent.left = child; }
+            else { node.parent.right = child; }
 
-        if (child != null) { child.parent = node.parent; }
+            if (child != null) { child.parent = node.parent; }
+        }
     }
 
     /* ASSUMES NODE IS IN TREE */

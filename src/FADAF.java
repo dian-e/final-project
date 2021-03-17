@@ -7,7 +7,7 @@ public class FADAF<K extends Comparable<? super K>, D> {
     private DAFTree<K, D> tree;
 
     public FADAF(int capacity) {
-        this.hash = new HashTable<>(10);
+        this.hash = new HashTable<>(capacity);
         this.tree = new DAFTree<>();
     }
 
